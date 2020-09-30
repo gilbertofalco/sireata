@@ -4,8 +4,6 @@ public abstract class GenericDao {
 	
 	protected SalvarDao salvar;
 	
-	public salvar() {
-		
-	}
+	public salvar();
 
 }
