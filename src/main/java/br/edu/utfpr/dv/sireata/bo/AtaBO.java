@@ -17,17 +17,18 @@ import br.edu.utfpr.dv.sireata.dao.AtaDAO;
 import br.edu.utfpr.dv.sireata.dao.AtaParticipanteDAO;
 import br.edu.utfpr.dv.sireata.dao.OrgaoDAO;
 import br.edu.utfpr.dv.sireata.dao.PautaDAO;
+import br.edu.utfpr.dv.sireata.generic.dao.AllInterfaces;
 import br.edu.utfpr.dv.sireata.model.Anexo;
 import br.edu.utfpr.dv.sireata.model.Ata;
-import br.edu.utfpr.dv.sireata.model.Pauta;
-import br.edu.utfpr.dv.sireata.util.DateUtils;
-import br.edu.utfpr.dv.sireata.util.ReportUtils;
-import br.edu.utfpr.dv.sireata.util.StringUtils;
 import br.edu.utfpr.dv.sireata.model.Ata.TipoAta;
 import br.edu.utfpr.dv.sireata.model.AtaParticipante;
 import br.edu.utfpr.dv.sireata.model.AtaReport;
 import br.edu.utfpr.dv.sireata.model.Orgao;
 import br.edu.utfpr.dv.sireata.model.ParticipanteReport;
+import br.edu.utfpr.dv.sireata.model.Pauta;
+import br.edu.utfpr.dv.sireata.util.DateUtils;
+import br.edu.utfpr.dv.sireata.util.ReportUtils;
+import br.edu.utfpr.dv.sireata.util.StringUtils;
 
 public class AtaBO {
 	
@@ -232,10 +233,11 @@ public class AtaBO {
 				
 				for(Anexo a : ata.getAnexos()) {
 					AnexoDAO adao = new AnexoDAO();
+					AllInterfaces obj = (AllInterfaces) a;
 					
 					a.getAta().setIdAta(id);
 					a.setOrdem(i);
-					adao.salvar(a);
+					adao.salvar(obj);
 					i++;
 				}
 			}

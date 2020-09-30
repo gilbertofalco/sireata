@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import br.edu.utfpr.dv.sireata.dao.PautaDAO;
+import br.edu.utfpr.dv.sireata.generic.dao.AllInterfaces;
 import br.edu.utfpr.dv.sireata.model.Pauta;
 
 public class PautaBO {
@@ -48,8 +49,9 @@ public class PautaBO {
 			this.validarDados(pauta);
 			
 			PautaDAO dao = new PautaDAO();
+			AllInterfaces obj = (AllInterfaces) pauta;
 			
-			return dao.salvar(pauta);
+			return dao.salvar(obj);
 		}catch(Exception e){
 			Logger.getGlobal().log(Level.SEVERE, e.getMessage(), e);
 			

@@ -5,5 +5,5 @@ import java.sql.SQLException;
 import org.apache.commons.collections.list.AbstractLinkedList;
 
 public interface EditarDAO {
-	  public void update(AbstractLinkedList obj, String str) throws SQLException;
+	  public void update(AllInterfaces obj, String str) throws SQLException;
 	}

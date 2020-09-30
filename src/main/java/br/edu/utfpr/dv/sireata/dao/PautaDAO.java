@@ -8,34 +8,88 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.edu.utfpr.dv.sireata.generic.dao.AllInterfaces;
+import br.edu.utfpr.dv.sireata.generic.dao.GeralDAO;
 import br.edu.utfpr.dv.sireata.model.Pauta;
 
-public class PautaDAO {
-	
-	public Pauta buscarPorId(int id) throws SQLException{
+
+public class PautaDAO extends GeralDAO {
+	@Override
+	public int save(AllInterfaces obj) throws SQLException {
+		Pauta pauta = (Pauta) obj;
+
+    boolean insert = (pauta.getIdPauta() == 0);
+    Connection conn = null;
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+
+    try {
+      conn = ConnectionDAO.getInstance().getConnection();
+
+      if (insert) {
+        stmt = conn.prepareStatement("INSERT INTO pautas(idAta, ordem, titulo, descricao) VALUES(?, ?, ?, ?)",
+            Statement.RETURN_GENERATED_KEYS);
+      } else {
+        stmt = conn.prepareStatement("UPDATE pautas SET idAta=?, ordem=?, titulo=?, descricao=? WHERE idPauta=?");
+      }
+
+      stmt.setInt(1, pauta.getAta().getIdAta());
+      stmt.setInt(2, pauta.getOrdem());
+      stmt.setString(3, pauta.getTitulo());
+      stmt.setString(4, pauta.getDescricao());
+
+      if (!insert) {
+        stmt.setInt(5, pauta.getIdPauta());
+      }
+
+      stmt.execute();
+
+      if (insert) {
+        rs = stmt.getGeneratedKeys();
+
+        if (rs.next()) {
+          pauta.setIdPauta(rs.getInt(1));
+        }
+      }
+
+      return pauta.getIdPauta();
+    } finally {
+      if ((rs != null) && !rs.isClosed())
+        rs.close();
+      if ((stmt != null) && !stmt.isClosed())
+        stmt.close();
+      if ((conn != null) && !conn.isClosed())
+        conn.close();
+    }
+	}
+
+	@Override
+	public AllInterfaces findById(int id) throws SQLException {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
-		
-		try{
+
+		try {
 			conn = ConnectionDAO.getInstance().getConnection();
 			stmt = conn.prepareStatement("SELECT * FROM pautas WHERE idPauta = ?");
-		
+
 			stmt.setInt(1, id);
-			
+
 			rs = stmt.executeQuery();
-			
-			if(rs.next()){
-				return this.carregarObjeto(rs);
-			}else{
+
+			if (rs.next()) {
+				Pauta objPauta = this.carregarObjeto(rs);
+				AllInterfaces daoEntity = (AllInterfaces) objPauta;
+				return daoEntity;
+			} else {
 				return null;
 			}
-		}finally{
-			if((rs != null) && !rs.isClosed())
+		} finally {
+			if ((rs != null) && !rs.isClosed())
 				rs.close();
-			if((stmt != null) && !stmt.isClosed())
+			if ((stmt != null) && !stmt.isClosed())
 				stmt.close();
-			if((conn != null) && !conn.isClosed())
+			if ((conn != null) && !conn.isClosed())
 				conn.close();
 		}
 	}
@@ -67,53 +121,9 @@ public class PautaDAO {
 				conn.close();
 		}
 	}
-	
-	public int salvar(Pauta pauta) throws SQLException{
-		boolean insert = (pauta.getIdPauta() == 0);
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		
-		try{
-			conn = ConnectionDAO.getInstance().getConnection();
-		
-			if(insert){
-				stmt = conn.prepareStatement("INSERT INTO pautas(idAta, ordem, titulo, descricao) VALUES(?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
-			}else{
-				stmt = conn.prepareStatement("UPDATE pautas SET idAta=?, ordem=?, titulo=?, descricao=? WHERE idPauta=?");
-			}
-			
-			stmt.setInt(1, pauta.getAta().getIdAta());
-			stmt.setInt(2, pauta.getOrdem());
-			stmt.setString(3, pauta.getTitulo());
-			stmt.setString(4, pauta.getDescricao());
-			
-			if(!insert){
-				stmt.setInt(5, pauta.getIdPauta());
-			}
-			
-			stmt.execute();
-			
-			if(insert){
-				rs = stmt.getGeneratedKeys();
-				
-				if(rs.next()){
-					pauta.setIdPauta(rs.getInt(1));
-				}
-			}
-			
-			return pauta.getIdPauta();
-		}finally{
-			if((rs != null) && !rs.isClosed())
-				rs.close();
-			if((stmt != null) && !stmt.isClosed())
-				stmt.close();
-			if((conn != null) && !conn.isClosed())
-				conn.close();
-		}
-	}
-	
-	public void excluir(int id) throws SQLException{
+
+	@Override
+	public void delete(int id) throws SQLException {
 		Connection conn = null;
 		Statement stmt = null;
 		
